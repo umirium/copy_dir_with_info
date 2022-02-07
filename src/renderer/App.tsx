@@ -1,40 +1,41 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
 import './App.css';
+import { useState } from 'react';
+import AlbumIcon from '@mui/icons-material/Album';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 
 const Hello = () => {
+  const [count, setCount] = useState<number>(0);
+
+  const increment = () => {
+    setCount(count + 1);
+  };
+
+  const decrement = () => {
+    setCount(count - 1);
+  };
+
+  const reset = () => {
+    setCount(0);
+  };
+
   return (
-    <div>
-      <div className="Hello">
-        <img width="200px" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
+    <div className="App">
+      <Stack spacing={2} direction="row">
+        <Button variant="text">Text</Button>
+        <Button variant="contained" onClick={increment}>
+          increment
+        </Button>
+        <Button variant="outlined" onClick={decrement}>
+          decrement
+        </Button>
+        <Button variant="contained" endIcon={<AlbumIcon />} onClick={reset}>
+          reset
+        </Button>
+      </Stack>
+
+      <span>count: {count}</span>
     </div>
   );
 };
