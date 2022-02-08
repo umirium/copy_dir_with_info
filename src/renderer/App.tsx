@@ -4,6 +4,7 @@ import { useState } from 'react';
 import AlbumIcon from '@mui/icons-material/Album';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 
 const Hello = () => {
@@ -29,6 +30,15 @@ const Hello = () => {
       paddingTop: '1em',
     },
   });
+
+  // extend style of mui's button
+  const MyButton = styled(Button)({
+    backgroundColor: 'gray',
+    '&:hover': {
+      backgroundColor: 'gray',
+    },
+  });
+
   return (
     <div css={appStyle}>
       <Stack spacing={2} direction="row">
@@ -42,6 +52,7 @@ const Hello = () => {
         <Button variant="contained" endIcon={<AlbumIcon />} onClick={reset}>
           reset
         </Button>
+        <MyButton variant="contained">ボタン</MyButton>
       </Stack>
 
       <div>count: {count}</div>
