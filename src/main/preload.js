@@ -20,4 +20,9 @@ contextBridge.exposeInMainWorld('electron', {
       }
     },
   },
+  shell: {
+    mkdir(dirname) {
+      return ipcRenderer.sendSync('mkdir', dirname);
+    },
+  },
 });

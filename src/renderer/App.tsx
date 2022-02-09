@@ -8,6 +8,7 @@ import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 
 const Hello = () => {
+  const dirname = 'testtest';
   const [count, setCount] = useState<number>(0);
 
   const increment = () => {
@@ -76,6 +77,19 @@ const Hello = () => {
       >
         細字のテストです。
       </div>
+
+      <Button
+        type="button"
+        variant="contained"
+        color="secondary"
+        onClick={() => {
+          const result = window.electron.shell.mkdir(dirname);
+
+          console.log(`make directory: ${result ? 'success' : 'false'}`);
+        }}
+      >
+        create directory
+      </Button>
     </div>
   );
 };

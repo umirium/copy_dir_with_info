@@ -14,6 +14,7 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { spawn } from 'child_process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -102,7 +103,7 @@ const createWindow = async () => {
   menuBuilder.buildMenu();
 
   // Open urls in the user's browser
-  mainWindow.webContents.setWindowOpenHandler(edata => {
+  mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
@@ -135,3 +136,15 @@ app
     });
   })
   .catch(console.log);
+
+ipcMain.on('mkdir', async (event, dirname) => {
+  const proc = spawn(
+    'mkdir',
+    ['-p', dirname, '&&', 'touch', `./${dirname}/aaa.txt`],
+    { shell: true }
+  );
+
+  proc.on('close', (code) => {
+    event.returnValue = code === 0;
+  });
+});
