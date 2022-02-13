@@ -5,8 +5,12 @@ import App from './App';
 declare global {
   interface Window {
     electron: {
-      shell: {
-        mkdir: (dirname: string) => boolean;
+      ipcRenderer: {
+        mkdir: (dirpath: string, files: string[]) => boolean;
+        cpdir: (source: string, distination: string) => void;
+
+        on: (channel: any, func: any) => void;
+        once: (channel: any, func: any) => void;
       };
     };
   }

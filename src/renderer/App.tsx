@@ -1,6 +1,6 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AlbumIcon from '@mui/icons-material/Album';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -8,8 +8,19 @@ import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 
 const Hello = () => {
-  const dirname = 'testtest';
   const [count, setCount] = useState<number>(0);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    // IPC connection Listeners
+    window.electron.ipcRenderer.on('mkdir', (result: boolean) => {
+      console.log(`make directory: ${result}`);
+    });
+    window.electron.ipcRenderer.on('cpdir', (percent: number) => {
+      console.log(percent);
+      setProgress(percent);
+    });
+  }, []);
 
   const increment = () => {
     setCount(count + 1);
@@ -53,7 +64,6 @@ const Hello = () => {
         <Button variant="contained" endIcon={<AlbumIcon />} onClick={reset}>
           reset
         </Button>
-        <MyButton variant="contained">ボタン</MyButton>
       </Stack>
 
       <div>count: {count}</div>
@@ -83,13 +93,30 @@ const Hello = () => {
         variant="contained"
         color="secondary"
         onClick={() => {
-          const result = window.electron.shell.mkdir(dirname);
-
-          console.log(`make directory: ${result ? 'success' : 'false'}`);
+          window.electron.ipcRenderer.mkdir('/Users/user/Downloads/mkdir', [
+            'aaa.txt',
+            'bbb.dat',
+            'ccc.html',
+          ]);
         }}
       >
         create directory
       </Button>
+
+      <MyButton
+        type="button"
+        variant="contained"
+        onClick={() => {
+          window.electron.ipcRenderer.cpdir(
+            '/Users/user/Downloads/source',
+            '/Users/user/Downloads/destination'
+          );
+        }}
+      >
+        copy directory
+      </MyButton>
+
+      <div>progress: {progress}</div>
     </div>
   );
 };

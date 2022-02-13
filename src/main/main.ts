@@ -15,6 +15,7 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { spawn } from 'child_process';
+import cpy from 'cpy';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -27,12 +28,6 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -137,14 +132,63 @@ app
   })
   .catch(console.log);
 
-ipcMain.on('mkdir', async (event, dirname) => {
-  const proc = spawn(
-    'mkdir',
-    ['-p', dirname, '&&', 'touch', `./${dirname}/aaa.txt`],
-    { shell: true }
-  );
+/**
+ * IPC connection listeners
+ */
+ipcMain.on('mkdir', async (event, dirname, files) => {
+  const params = ['-p', dirname];
 
-  proc.on('close', (code) => {
-    event.returnValue = code === 0;
+  files.forEach((f: string) => {
+    params.push('&&', 'touch', `${dirname}/${f}`);
   });
+
+  spawn('mkdir', params, { shell: true }).on('close', (result) => {
+    event.sender.send('mkdir', result === 0);
+  });
+});
+
+ipcMain.on('cpdir', async (event, source, distination) => {
+  let test = 0;
+
+  await cpy(source, distination, {
+    filter: (file) =>
+      ![
+        'HTM',
+        'htm',
+        'HTML',
+        'html',
+        'XML',
+        'xml',
+        'PDF',
+        'pdf',
+        'TXT',
+        'JPG',
+        'jpg',
+        'GIF',
+        'gif',
+        'EXE',
+        'exe',
+        'JAR',
+        'jar',
+        'DLL',
+        'dll',
+        'BAT',
+        'bat',
+        'DAT',
+        'dat',
+        'ZIP',
+        'zip',
+      ].includes(file.extension),
+  }).on('progress', (progress) => {
+    console.log(progress);
+
+    // notify the renderer if there is a change in percentage
+    const percent = Math.floor(progress.percent * 100);
+    if (test !== percent) {
+      test = percent;
+      event.sender.send('cpdir', percent);
+    }
+  });
+
+  event.sender.send('cpdir', 100);
 });

@@ -1,28 +1,26 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
+const validChannels = ['ipc-example', 'mkdir', 'cpdir'];
+
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
-    myPing() {
-      ipcRenderer.send('ipc-example', 'ping');
+    mkdir(dirpath, files) {
+      return ipcRenderer.send('mkdir', dirpath, files);
+    },
+    cpdir(source, distination) {
+      ipcRenderer.send('cpdir', source, distination);
     },
     on(channel, func) {
-      const validChannels = ['ipc-example'];
       if (validChannels.includes(channel)) {
         // Deliberately strip event as it includes `sender`
         ipcRenderer.on(channel, (event, ...args) => func(...args));
       }
     },
     once(channel, func) {
-      const validChannels = ['ipc-example'];
       if (validChannels.includes(channel)) {
         // Deliberately strip event as it includes `sender`
         ipcRenderer.once(channel, (event, ...args) => func(...args));
       }
-    },
-  },
-  shell: {
-    mkdir(dirname) {
-      return ipcRenderer.sendSync('mkdir', dirname);
     },
   },
 });
