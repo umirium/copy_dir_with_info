@@ -6,9 +6,18 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
+import { Box, LinearProgress } from '@mui/material';
 
-const Hello = () => {
+// constants of progress bar
+const PROGRESS_STATE = {
+  NONE: 0,
+  DETERMINATE: 1,
+  INDETERMINATE: 2,
+};
+
+const Index = () => {
   const [count, setCount] = useState<number>(0);
+  const [progressState, setProgressState] = useState(PROGRESS_STATE.NONE);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -18,9 +27,15 @@ const Hello = () => {
     });
     window.electron.ipcRenderer.on('cpdir', (percent: number) => {
       console.log(percent);
-      setProgress(percent);
+      setProgress(percent * 2);
     });
   }, []);
+
+  useEffect(() => {
+    if (progress > 100) {
+      setProgressState(PROGRESS_STATE.INDETERMINATE);
+    }
+  }, [progress]);
 
   const increment = () => {
     setCount(count + 1);
@@ -50,6 +65,33 @@ const Hello = () => {
       backgroundColor: 'gray',
     },
   });
+
+  // The remaining processes that exceed 100% will be shown as "Linear indeterminate"
+  // because the number of files after filtering is unknown.
+  const progressBar = () => {
+    switch (progressState) {
+      case PROGRESS_STATE.DETERMINATE:
+        return (
+          <>
+            <Box sx={{ width: '100%' }}>
+              <LinearProgress variant="determinate" value={progress} />
+            </Box>
+            {progress} %
+          </>
+        );
+      case PROGRESS_STATE.INDETERMINATE:
+        return (
+          <>
+            <Box sx={{ width: '100%' }}>
+              <LinearProgress />
+            </Box>
+            processing...
+          </>
+        );
+      default:
+        return <></>;
+    }
+  };
 
   return (
     <div css={appStyle}>
@@ -111,12 +153,13 @@ const Hello = () => {
             '/Users/user/Downloads/source',
             '/Users/user/Downloads/destination'
           );
+          setProgressState(PROGRESS_STATE.DETERMINATE);
         }}
       >
         copy directory
       </MyButton>
 
-      <div>progress: {progress}</div>
+      {progressBar()}
     </div>
   );
 };
@@ -125,7 +168,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Hello />} />
+        <Route path="/" element={<Index />} />
       </Routes>
     </Router>
   );
