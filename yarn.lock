@@ -489,6 +489,11 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@fontsource/noto-sans-jp@^4.5.3":
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/@fontsource/noto-sans-jp/-/noto-sans-jp-4.5.3.tgz#21288f57b6735cc39c5d5e33df6d9ba9590f9d34"
+  integrity sha512-MEo8So5d4QOg2dTUivuraQQwDmSEbok/xuLcfQs2Up4vslv/YNaRhZmmWvvU11vfEwKCFrHXQuXOYu7zCQwBHQ==
+
 "@gar/promisify@^1.0.1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"

@@ -7,6 +7,11 @@ import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { Box, LinearProgress } from '@mui/material';
+import '@fontsource/noto-sans-jp/';
+import '@fontsource/noto-sans-jp/100.css';
+import '@fontsource/noto-sans-jp/300.css';
+import '@fontsource/noto-sans-jp/700.css';
+import '@fontsource/noto-sans-jp/900.css';
 
 // constants of progress bar
 const PROGRESS_STATE = {
@@ -55,7 +60,7 @@ const Index = () => {
   // set the overal style with mui
   const appStyle = css({
     textAlign: 'center',
-    fontFamily: 'NotoJP',
+    fontFamily: 'Noto Sans JP',
     div: {
       paddingTop: '1em',
     },
