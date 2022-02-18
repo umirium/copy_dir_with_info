@@ -13,6 +13,7 @@ const PROGRESS_STATE = {
   NONE: 0,
   DETERMINATE: 1,
   INDETERMINATE: 2,
+  COMPLETE: 3,
 };
 
 const Index = () => {
@@ -32,7 +33,9 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    if (progress > 100) {
+    if (progress >= 200) {
+      setProgressState(PROGRESS_STATE.COMPLETE);
+    } else if (progress > 100) {
       setProgressState(PROGRESS_STATE.INDETERMINATE);
     }
   }, [progress]);
@@ -76,18 +79,39 @@ const Index = () => {
             <Box sx={{ width: '100%' }}>
               <LinearProgress variant="determinate" value={progress} />
             </Box>
-            {progress} %
+            <Box>{progress} %</Box>
           </>
         );
+
       case PROGRESS_STATE.INDETERMINATE:
         return (
           <>
             <Box sx={{ width: '100%' }}>
               <LinearProgress />
             </Box>
-            processing...
+            <Box
+              sx={{
+                '@keyframes pulsate': {
+                  from: {
+                    opacity: 1,
+                    transform: 'scale(1)',
+                  },
+                  to: {
+                    opacity: 0,
+                    transform: 'scale(1.1)',
+                  },
+                },
+                animation: 'pulsate 1.5s infinite ease',
+              }}
+            >
+              processing...
+            </Box>
           </>
         );
+
+      case PROGRESS_STATE.COMPLETE:
+        return <div>completed!</div>;
+
       default:
         return <></>;
     }
@@ -148,12 +172,17 @@ const Index = () => {
       <MyButton
         type="button"
         variant="contained"
+        disabled={
+          progressState === PROGRESS_STATE.DETERMINATE ||
+          progressState === PROGRESS_STATE.INDETERMINATE
+        }
         onClick={() => {
           window.electron.ipcRenderer.cpdir(
             '/Users/user/Downloads/source',
             '/Users/user/Downloads/destination'
           );
           setProgressState(PROGRESS_STATE.DETERMINATE);
+          setProgress(0);
         }}
       >
         copy directory
