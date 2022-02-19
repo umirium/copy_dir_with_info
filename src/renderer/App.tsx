@@ -6,7 +6,14 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
-import { Box, LinearProgress } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  LinearProgress,
+  Modal,
+  Typography,
+} from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
 import '@fontsource/noto-sans-jp/';
 import '@fontsource/noto-sans-jp/100.css';
 import '@fontsource/noto-sans-jp/300.css';
@@ -25,6 +32,7 @@ const Index = () => {
   const [count, setCount] = useState<number>(0);
   const [progressState, setProgressState] = useState(PROGRESS_STATE.NONE);
   const [progress, setProgress] = useState(0);
+  const [modal, setModal] = useState(false);
 
   useEffect(() => {
     // IPC connection Listeners
@@ -56,6 +64,10 @@ const Index = () => {
   const reset = () => {
     setCount(0);
   };
+
+  // Modal control
+  const handleOpenModal = () => setModal(true);
+  const handleCloseModal = () => setModal(false);
 
   // set the overal style with mui
   const appStyle = css({
@@ -136,6 +148,41 @@ const Index = () => {
           reset
         </Button>
       </Stack>
+
+      <Box sx={{ textAlign: 'right' }}>
+        <IconButton aria-label="settings" onClick={handleOpenModal}>
+          <SettingsIcon sx={{ fontSize: 50, cursor: 'pointer' }} />
+        </IconButton>
+
+        <Modal
+          open={modal}
+          onClose={handleCloseModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box
+            sx={{
+              position: 'absolute' as const,
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 400,
+              bgcolor: 'background.paper',
+              border: '2px solid #000',
+              boxShadow: 24,
+              p: 4,
+              borderRadius: 2,
+            }}
+          >
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Modal title
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              Hello Modal.
+            </Typography>
+          </Box>
+        </Modal>
+      </Box>
 
       <div>count: {count}</div>
 
