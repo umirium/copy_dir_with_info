@@ -1,19 +1,28 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import AlbumIcon from '@mui/icons-material/Album';
+import CloseIcon from '@mui/icons-material/Close';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import {
   Box,
+  FormControl,
+  Grid,
   IconButton,
+  InputLabel,
   LinearProgress,
+  MenuItem,
   Modal,
+  Select,
+  SelectChangeEvent,
+  TextField,
   Typography,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
+import LockIcon from '@mui/icons-material/Lock';
 import '@fontsource/noto-sans-jp/';
 import '@fontsource/noto-sans-jp/100.css';
 import '@fontsource/noto-sans-jp/300.css';
@@ -28,11 +37,24 @@ const PROGRESS_STATE = {
   COMPLETE: 3,
 };
 
+// constants of modal items
+const LANGUAGES = {
+  LNG_EN: '1',
+  LNG_JP: '2',
+};
+
 const Index = () => {
   const [count, setCount] = useState<number>(0);
+  // copy progress
   const [progressState, setProgressState] = useState(PROGRESS_STATE.NONE);
   const [progress, setProgress] = useState(0);
+  // modal items
   const [modal, setModal] = useState(false);
+  const [source, setSource] = useState('/Users/user/Downloads/source');
+  const [destination, setDestination] = useState(
+    '/Users/user/Downloads/destination'
+  );
+  const [language, setLanguage] = useState<string>(LANGUAGES.LNG_EN);
 
   useEffect(() => {
     // IPC connection Listeners
@@ -68,6 +90,17 @@ const Index = () => {
   // Modal control
   const handleOpenModal = () => setModal(true);
   const handleCloseModal = () => setModal(false);
+
+  // Modal items
+  const handleChangeSource = (event: ChangeEvent<HTMLInputElement>) => {
+    setSource(event.target.value);
+  };
+  const handleChangeDestination = (event: ChangeEvent<HTMLInputElement>) => {
+    setDestination(event.target.value);
+  };
+  const handleChangeLanguage = (event: SelectChangeEvent) => {
+    setLanguage(event.target.value);
+  };
 
   // set the overal style with mui
   const appStyle = css({
@@ -151,38 +184,90 @@ const Index = () => {
 
       <Box sx={{ textAlign: 'right' }}>
         <IconButton aria-label="settings" onClick={handleOpenModal}>
-          <SettingsIcon sx={{ fontSize: 50, cursor: 'pointer' }} />
+          <SettingsIcon sx={{ fontSize: 30, cursor: 'pointer' }} />
         </IconButton>
-
-        <Modal
-          open={modal}
-          onClose={handleCloseModal}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box
-            sx={{
-              position: 'absolute' as const,
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 400,
-              bgcolor: 'background.paper',
-              border: '2px solid #000',
-              boxShadow: 24,
-              p: 4,
-              borderRadius: 2,
-            }}
-          >
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Modal title
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Hello Modal.
-            </Typography>
-          </Box>
-        </Modal>
       </Box>
+
+      <Modal
+        open={modal}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute' as const,
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            border: '0px solid #000',
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+          }}
+        >
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Settings
+          </Typography>
+          <Typography
+            id="modal-modal-description"
+            component="div"
+            sx={{ mt: 2 }}
+          >
+            <TextField
+              label="Source"
+              variant="outlined"
+              defaultValue={source}
+              onChange={handleChangeSource}
+              sx={{ mt: 2 }}
+              fullWidth
+            />
+
+            <TextField
+              label="Destination"
+              variant="outlined"
+              defaultValue={destination}
+              onChange={handleChangeDestination}
+              sx={{ mt: 2 }}
+              fullWidth
+            />
+
+            <FormControl fullWidth sx={{ mt: 4 }}>
+              <InputLabel id="demo-simple-select-label">Language</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={language}
+                label="Language"
+                onChange={handleChangeLanguage}
+              >
+                <MenuItem value="1">English</MenuItem>
+                <MenuItem value="2">Japanese</MenuItem>
+              </Select>
+            </FormControl>
+            <Box sx={{ mt: 6, flexGrow: 1, textAlign: 'right' }}>
+              <Grid container spacing={2}>
+                <Grid item xs={6} sx={{ textAlign: 'left' }}>
+                  <IconButton aria-label="lock" onClick={handleOpenModal}>
+                    <LockIcon sx={{ fontSize: 30, cursor: 'pointer' }} />
+                  </IconButton>
+                </Grid>
+                <Grid item xs={6} sx={{ textAlign: 'right' }}>
+                  <Button
+                    variant="contained"
+                    startIcon={<CloseIcon />}
+                    onClick={handleCloseModal}
+                  >
+                    close
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+          </Typography>
+        </Box>
+      </Modal>
 
       <div>count: {count}</div>
 
@@ -229,10 +314,7 @@ const Index = () => {
           progressState === PROGRESS_STATE.INDETERMINATE
         }
         onClick={() => {
-          window.electron.ipcRenderer.cpdir(
-            '/Users/user/Downloads/source',
-            '/Users/user/Downloads/destination'
-          );
+          window.electron.ipcRenderer.cpdir(source, destination);
           setProgressState(PROGRESS_STATE.DETERMINATE);
           setProgress(0);
         }}
