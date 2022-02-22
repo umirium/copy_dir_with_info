@@ -1,8 +1,9 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AlbumIcon from '@mui/icons-material/Album';
 import CloseIcon from '@mui/icons-material/Close';
+import FolderIcon from '@mui/icons-material/Folder';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
@@ -12,13 +13,14 @@ import {
   FormControl,
   Grid,
   IconButton,
+  InputAdornment,
   InputLabel,
   LinearProgress,
   MenuItem,
   Modal,
+  OutlinedInput,
   Select,
   SelectChangeEvent,
-  TextField,
   Typography,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -56,9 +58,13 @@ const Index = () => {
     '/Users/user/Downloads/destination'
   );
   const [language, setLanguage] = useState<string>(LANGUAGES.LNG_EN);
+  const srcUploadRef = useRef<HTMLInputElement>(null);
+  const dstUploadRef = useRef<HTMLInputElement>(null);
+  const srcInputRef = useRef<HTMLInputElement>(null);
+  const dstInputRef = useRef<HTMLInputElement>(null);
 
+  // IPC connection Listeners
   useEffect(() => {
-    // IPC connection Listeners
     window.electron.ipcRenderer.on('mkdir', (result: boolean) => {
       console.log(`make directory: ${result}`);
     });
@@ -68,6 +74,7 @@ const Index = () => {
     });
   }, []);
 
+  // copy progress
   useEffect(() => {
     // do not show the progress bar before initialization
     if (progress === -1) {
@@ -84,6 +91,17 @@ const Index = () => {
       setProgressState(PROGRESS_STATE.COMPLETE);
     }
   }, [progress]);
+
+  // add attribute to file uploaders
+  useEffect(() => {
+    if (!srcUploadRef.current) throw Error('srcUploadRef is not assigned');
+    srcUploadRef.current.setAttribute('directory', '');
+    srcUploadRef.current.setAttribute('webkitdirectory', '');
+
+    if (!dstUploadRef.current) throw Error('dstUploadRef is not assigned');
+    dstUploadRef.current.setAttribute('directory', '');
+    dstUploadRef.current.setAttribute('webkitdirectory', '');
+  });
 
   const increment = () => {
     setCount(count + 1);
@@ -102,14 +120,32 @@ const Index = () => {
   const handleCloseModal = () => setModal(false);
 
   // Modal items
-  const handleChangeSource = (event: ChangeEvent<HTMLInputElement>) => {
-    setSource(event.target.value);
-  };
-  const handleChangeDestination = (event: ChangeEvent<HTMLInputElement>) => {
-    setDestination(event.target.value);
-  };
   const handleChangeLanguage = (event: SelectChangeEvent) => {
     setLanguage(event.target.value);
+  };
+
+  const handleClickSrc = () => {
+    if (!srcUploadRef.current) throw Error('srcUploadRef is not assigned');
+    srcUploadRef.current.click();
+  };
+  const handleChangeSrcInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length !== 0) {
+      const path = event.target.files[0].path.split('/');
+      path.pop();
+      setSource(path.join('/'));
+    }
+  };
+
+  const handleClickDst = () => {
+    if (!dstUploadRef.current) throw Error('dstUploadRef is not assigned');
+    dstUploadRef.current.click();
+  };
+  const handleChangeDstInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length !== 0) {
+      const path = event.target.files[0].path.split('/');
+      path.pop();
+      setDestination(path.join('/'));
+    }
   };
 
   // set the overal style with mui
@@ -186,6 +222,20 @@ const Index = () => {
 
   return (
     <div css={appStyle}>
+      {/* file uploader for source folder icon and destination folder icon */}
+      <input
+        hidden
+        ref={srcUploadRef}
+        type="file"
+        onChange={handleChangeSrcInput}
+      />
+      <input
+        hidden
+        ref={dstUploadRef}
+        type="file"
+        onChange={handleChangeDstInput}
+      />
+
       <Stack spacing={2} direction="row">
         <Button variant="text">Text</Button>
         <Button variant="contained" onClick={increment}>
@@ -233,29 +283,57 @@ const Index = () => {
             component="div"
             sx={{ mt: 2 }}
           >
-            <TextField
-              label="Source"
-              variant="outlined"
-              defaultValue={source}
-              onChange={handleChangeSource}
-              sx={{ mt: 2 }}
-              fullWidth
-            />
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel htmlFor="source">Source</InputLabel>
+              <OutlinedInput
+                id="source"
+                type="text"
+                ref={srcInputRef}
+                value={source}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="select source directory"
+                      onClick={handleClickSrc}
+                      edge="end"
+                    >
+                      <FolderIcon />
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Source"
+                disabled
+              />
+            </FormControl>
 
-            <TextField
-              label="Destination"
-              variant="outlined"
-              defaultValue={destination}
-              onChange={handleChangeDestination}
-              sx={{ mt: 2 }}
-              fullWidth
-            />
+            <FormControl variant="outlined" sx={{ mt: 2 }} fullWidth>
+              <InputLabel htmlFor="destination">Destination</InputLabel>
+              <OutlinedInput
+                id="destination"
+                type="text"
+                ref={dstInputRef}
+                value={destination}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="select destination directory"
+                      onClick={handleClickDst}
+                      edge="end"
+                    >
+                      <FolderIcon />
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Destination"
+                disabled
+              />
+            </FormControl>
 
             <FormControl fullWidth sx={{ mt: 4 }}>
-              <InputLabel id="demo-simple-select-label">Language</InputLabel>
+              <InputLabel id="select-language">Language</InputLabel>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                labelId="select-language"
+                id="language"
                 value={language}
                 label="Language"
                 onChange={handleChangeLanguage}
