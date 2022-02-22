@@ -32,9 +32,10 @@ import '@fontsource/noto-sans-jp/900.css';
 // constants of progress bar
 const PROGRESS_STATE = {
   NONE: 0,
-  DETERMINATE: 1,
-  INDETERMINATE: 2,
-  COMPLETE: 3,
+  INITIALIZE: 1,
+  DETERMINATE: 2,
+  INDETERMINATE: 3,
+  COMPLETE: 4,
 };
 
 // constants of modal items
@@ -47,7 +48,7 @@ const Index = () => {
   const [count, setCount] = useState<number>(0);
   // copy progress
   const [progressState, setProgressState] = useState(PROGRESS_STATE.NONE);
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(-1);
   // modal items
   const [modal, setModal] = useState(false);
   const [source, setSource] = useState('/Users/user/Downloads/source');
@@ -68,10 +69,19 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    if (progress >= 200) {
-      setProgressState(PROGRESS_STATE.COMPLETE);
-    } else if (progress > 100) {
+    // do not show the progress bar before initialization
+    if (progress === -1) {
+      return;
+    }
+
+    if (progress === 0) {
+      setProgressState(PROGRESS_STATE.INITIALIZE);
+    } else if (progress > 0 && progress < 100) {
+      setProgressState(PROGRESS_STATE.DETERMINATE);
+    } else if (progress < 200) {
       setProgressState(PROGRESS_STATE.INDETERMINATE);
+    } else {
+      setProgressState(PROGRESS_STATE.COMPLETE);
     }
   }, [progress]);
 
@@ -133,11 +143,16 @@ const Index = () => {
           </>
         );
 
+      case PROGRESS_STATE.INITIALIZE:
       case PROGRESS_STATE.INDETERMINATE:
         return (
           <>
             <Box sx={{ width: '100%' }}>
-              <LinearProgress />
+              {progressState === PROGRESS_STATE.INITIALIZE ? (
+                <LinearProgress variant="determinate" value={0} />
+              ) : (
+                <LinearProgress />
+              )}
             </Box>
             <Box
               sx={{
@@ -148,13 +163,15 @@ const Index = () => {
                   },
                   to: {
                     opacity: 0,
-                    transform: 'scale(1.1)',
+                    transform: 'scale(1.025)',
                   },
                 },
                 animation: 'pulsate 1.5s infinite ease',
               }}
             >
-              processing...
+              {progressState === PROGRESS_STATE.INITIALIZE
+                ? 'initializing...'
+                : 'processing...'}
             </Box>
           </>
         );
@@ -310,12 +327,12 @@ const Index = () => {
         type="button"
         variant="contained"
         disabled={
-          progressState === PROGRESS_STATE.DETERMINATE ||
-          progressState === PROGRESS_STATE.INDETERMINATE
+          progressState !== PROGRESS_STATE.NONE &&
+          progressState !== PROGRESS_STATE.COMPLETE
         }
         onClick={() => {
           window.electron.ipcRenderer.cpdir(source, destination);
-          setProgressState(PROGRESS_STATE.DETERMINATE);
+          setProgressState(PROGRESS_STATE.INITIALIZE);
           setProgress(0);
         }}
       >
