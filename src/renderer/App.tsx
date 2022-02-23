@@ -9,7 +9,9 @@ import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import {
+  Backdrop,
   Box,
+  CircularProgress,
   FormControl,
   Grid,
   IconButton,
@@ -62,6 +64,8 @@ const Index = () => {
   const dstUploadRef = useRef<HTMLInputElement>(null);
   const srcInputRef = useRef<HTMLInputElement>(null);
   const dstInputRef = useRef<HTMLInputElement>(null);
+  // backdrop
+  const [backdrop, setBackdrop] = useState(false);
 
   // IPC connection Listeners
   useEffect(() => {
@@ -115,6 +119,10 @@ const Index = () => {
     setCount(0);
   };
 
+  // backdrop while selecting folder paths
+  const handleOpenBackdrop = () => setBackdrop(true);
+  const handleCloseBackdrop = () => setBackdrop(false);
+
   // Modal control
   const handleOpenModal = () => setModal(true);
   const handleCloseModal = () => setModal(false);
@@ -127,24 +135,28 @@ const Index = () => {
   const handleClickSrc = () => {
     if (!srcUploadRef.current) throw Error('srcUploadRef is not assigned');
     srcUploadRef.current.click();
+    handleOpenBackdrop();
   };
   const handleChangeSrcInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length !== 0) {
       const path = event.target.files[0].path.split('/');
       path.pop();
       setSource(path.join('/'));
+      handleCloseBackdrop();
     }
   };
 
   const handleClickDst = () => {
     if (!dstUploadRef.current) throw Error('dstUploadRef is not assigned');
     dstUploadRef.current.click();
+    handleOpenBackdrop();
   };
   const handleChangeDstInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length !== 0) {
       const path = event.target.files[0].path.split('/');
       path.pop();
       setDestination(path.join('/'));
+      handleCloseBackdrop();
     }
   };
 
@@ -235,6 +247,15 @@ const Index = () => {
         type="file"
         onChange={handleChangeDstInput}
       />
+
+      <div>
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1301 }}
+          open={backdrop}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      </div>
 
       <Stack spacing={2} direction="row">
         <Button variant="text">Text</Button>
