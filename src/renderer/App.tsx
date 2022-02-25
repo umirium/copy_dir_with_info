@@ -1,37 +1,19 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AlbumIcon from '@mui/icons-material/Album';
-import CloseIcon from '@mui/icons-material/Close';
-import FolderIcon from '@mui/icons-material/Folder';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
-import {
-  Backdrop,
-  Box,
-  CircularProgress,
-  FormControl,
-  Grid,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  LinearProgress,
-  MenuItem,
-  Modal,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent,
-  Typography,
-} from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import LockIcon from '@mui/icons-material/Lock';
+import { Box, IconButton, LinearProgress } from '@mui/material';
 import '@fontsource/noto-sans-jp/';
 import '@fontsource/noto-sans-jp/100.css';
 import '@fontsource/noto-sans-jp/300.css';
 import '@fontsource/noto-sans-jp/700.css';
 import '@fontsource/noto-sans-jp/900.css';
+import SettingModal from './SettingModal';
 
 // constants of progress bar
 const PROGRESS_STATE = {
@@ -60,12 +42,6 @@ const Index = () => {
     '/Users/user/Downloads/destination'
   );
   const [language, setLanguage] = useState<string>(LANGUAGES.LNG_EN);
-  const srcUploadRef = useRef<HTMLInputElement>(null);
-  const dstUploadRef = useRef<HTMLInputElement>(null);
-  const srcInputRef = useRef<HTMLInputElement>(null);
-  const dstInputRef = useRef<HTMLInputElement>(null);
-  // backdrop
-  const [backdrop, setBackdrop] = useState(false);
 
   // IPC connection Listeners
   useEffect(() => {
@@ -96,17 +72,6 @@ const Index = () => {
     }
   }, [progress]);
 
-  // add attribute to file uploaders
-  useEffect(() => {
-    if (!srcUploadRef.current) throw Error('srcUploadRef is not assigned');
-    srcUploadRef.current.setAttribute('directory', '');
-    srcUploadRef.current.setAttribute('webkitdirectory', '');
-
-    if (!dstUploadRef.current) throw Error('dstUploadRef is not assigned');
-    dstUploadRef.current.setAttribute('directory', '');
-    dstUploadRef.current.setAttribute('webkitdirectory', '');
-  });
-
   const increment = () => {
     setCount(count + 1);
   };
@@ -119,45 +84,19 @@ const Index = () => {
     setCount(0);
   };
 
-  // backdrop while selecting folder paths
-  const handleOpenBackdrop = () => setBackdrop(true);
-  const handleCloseBackdrop = () => setBackdrop(false);
-
-  // Modal control
+  // modal control
   const handleOpenModal = () => setModal(true);
   const handleCloseModal = () => setModal(false);
 
-  // Modal items
-  const handleChangeLanguage = (event: SelectChangeEvent) => {
-    setLanguage(event.target.value);
+  // // modal items
+  const handleChangeLanguage = (selectedLanguage: string) => {
+    setLanguage(selectedLanguage);
   };
-
-  const handleClickSrc = () => {
-    if (!srcUploadRef.current) throw Error('srcUploadRef is not assigned');
-    srcUploadRef.current.click();
-    handleOpenBackdrop();
+  const handleChangeSource = (path: string) => {
+    setSource(path);
   };
-  const handleChangeSrcInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length !== 0) {
-      const path = event.target.files[0].path.split('/');
-      path.pop();
-      setSource(path.join('/'));
-      handleCloseBackdrop();
-    }
-  };
-
-  const handleClickDst = () => {
-    if (!dstUploadRef.current) throw Error('dstUploadRef is not assigned');
-    dstUploadRef.current.click();
-    handleOpenBackdrop();
-  };
-  const handleChangeDstInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length !== 0) {
-      const path = event.target.files[0].path.split('/');
-      path.pop();
-      setDestination(path.join('/'));
-      handleCloseBackdrop();
-    }
+  const handleChangeDestination = (path: string) => {
+    setDestination(path);
   };
 
   // set the overal style with mui
@@ -234,29 +173,6 @@ const Index = () => {
 
   return (
     <div css={appStyle}>
-      {/* file uploader for source folder icon and destination folder icon */}
-      <input
-        hidden
-        ref={srcUploadRef}
-        type="file"
-        onChange={handleChangeSrcInput}
-      />
-      <input
-        hidden
-        ref={dstUploadRef}
-        type="file"
-        onChange={handleChangeDstInput}
-      />
-
-      <div>
-        <Backdrop
-          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1301 }}
-          open={backdrop}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
-
       <Stack spacing={2} direction="row">
         <Button variant="text">Text</Button>
         <Button variant="contained" onClick={increment}>
@@ -276,114 +192,16 @@ const Index = () => {
         </IconButton>
       </Box>
 
-      <Modal
-        open={modal}
-        onClose={handleCloseModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box
-          sx={{
-            position: 'absolute' as const,
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            border: '0px solid #000',
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
-          }}
-        >
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Settings
-          </Typography>
-          <Typography
-            id="modal-modal-description"
-            component="div"
-            sx={{ mt: 2 }}
-          >
-            <FormControl variant="outlined" fullWidth>
-              <InputLabel htmlFor="source">Source</InputLabel>
-              <OutlinedInput
-                id="source"
-                type="text"
-                ref={srcInputRef}
-                value={source}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="select source directory"
-                      onClick={handleClickSrc}
-                      edge="end"
-                    >
-                      <FolderIcon />
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Source"
-                disabled
-              />
-            </FormControl>
-
-            <FormControl variant="outlined" sx={{ mt: 2 }} fullWidth>
-              <InputLabel htmlFor="destination">Destination</InputLabel>
-              <OutlinedInput
-                id="destination"
-                type="text"
-                ref={dstInputRef}
-                value={destination}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="select destination directory"
-                      onClick={handleClickDst}
-                      edge="end"
-                    >
-                      <FolderIcon />
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Destination"
-                disabled
-              />
-            </FormControl>
-
-            <FormControl fullWidth sx={{ mt: 4 }}>
-              <InputLabel id="select-language">Language</InputLabel>
-              <Select
-                labelId="select-language"
-                id="language"
-                value={language}
-                label="Language"
-                onChange={handleChangeLanguage}
-              >
-                <MenuItem value="1">English</MenuItem>
-                <MenuItem value="2">Japanese</MenuItem>
-              </Select>
-            </FormControl>
-            <Box sx={{ mt: 6, flexGrow: 1, textAlign: 'right' }}>
-              <Grid container spacing={2}>
-                <Grid item xs={6} sx={{ textAlign: 'left' }}>
-                  <IconButton aria-label="lock" onClick={handleOpenModal}>
-                    <LockIcon sx={{ fontSize: 30, cursor: 'pointer' }} />
-                  </IconButton>
-                </Grid>
-                <Grid item xs={6} sx={{ textAlign: 'right' }}>
-                  <Button
-                    variant="contained"
-                    startIcon={<CloseIcon />}
-                    onClick={handleCloseModal}
-                  >
-                    close
-                  </Button>
-                </Grid>
-              </Grid>
-            </Box>
-          </Typography>
-        </Box>
-      </Modal>
+      <SettingModal
+        modal={modal}
+        source={source}
+        destination={destination}
+        language={language}
+        closeModal={handleCloseModal}
+        setLanguage={handleChangeLanguage}
+        setSource={handleChangeSource}
+        setDestination={handleChangeDestination}
+      />
 
       <div>count: {count}</div>
 
