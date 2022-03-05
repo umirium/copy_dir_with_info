@@ -16,6 +16,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { spawn } from 'child_process';
 import cpy from 'cpy';
+import Store from 'electron-store';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -28,6 +29,9 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+
+// instantiation electron-store
+const store = new Store();
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -58,6 +62,8 @@ const createWindow = async () => {
   if (isDevelopment) {
     await installExtensions();
   }
+
+  console.log(`electron-store file: ${app.getPath('userData')}/config.json`);
 
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
@@ -135,6 +141,14 @@ app
 /**
  * IPC connection listeners
  */
+ipcMain.on('electron-store-get', async (event, val) => {
+  event.returnValue = store.get(val);
+});
+
+ipcMain.on('electron-store-set', async (_event, key, val) => {
+  store.set(key, val);
+});
+
 ipcMain.on('mkdir', async (event, dirname, files) => {
   const params = ['-p', dirname];
 

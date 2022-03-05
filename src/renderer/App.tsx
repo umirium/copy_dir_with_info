@@ -30,6 +30,20 @@ const LANGUAGES = {
   LNG_JP: '2',
 };
 
+// constants of default settings
+const DEF_SETTINGS = {
+  SOURCE: '/Users/user/Downloads/source',
+  DESTINATION: '/Users/user/Downloads/destination',
+  LANGUAGE: LANGUAGES.LNG_JP,
+};
+
+// constants of electron-store key
+const STORE = {
+  SOURCE: 'source',
+  DESTINATION: 'destination',
+  LANGUAGE: 'language',
+};
+
 const Index = () => {
   const [count, setCount] = useState<number>(0);
   // copy progress
@@ -37,11 +51,30 @@ const Index = () => {
   const [progress, setProgress] = useState(-1);
   // modal items
   const [modal, setModal] = useState(false);
-  const [source, setSource] = useState('/Users/user/Downloads/source');
-  const [destination, setDestination] = useState(
-    '/Users/user/Downloads/destination'
-  );
-  const [language, setLanguage] = useState<string>(LANGUAGES.LNG_EN);
+  const [source, setSource] = useState(DEF_SETTINGS.SOURCE);
+  const [destination, setDestination] = useState(DEF_SETTINGS.DESTINATION);
+  const [language, setLanguage] = useState<string>(DEF_SETTINGS.LANGUAGE);
+
+  // initialize settings with data got from electron-store
+  useEffect(() => {
+    let value = window.electron.store.get(STORE.SOURCE);
+
+    if (value) {
+      setSource(value);
+    }
+
+    value = window.electron.store.get(STORE.DESTINATION);
+
+    if (value) {
+      setDestination(value);
+    }
+
+    value = window.electron.store.get(STORE.LANGUAGE);
+
+    if (value) {
+      setLanguage(value);
+    }
+  }, []);
 
   // IPC connection Listeners
   useEffect(() => {
@@ -88,14 +121,17 @@ const Index = () => {
   const handleOpenModal = () => setModal(true);
   const handleCloseModal = () => setModal(false);
 
-  // // modal items
+  // modal items
   const handleChangeLanguage = (selectedLanguage: string) => {
+    window.electron.store.set(STORE.LANGUAGE, selectedLanguage);
     setLanguage(selectedLanguage);
   };
   const handleChangeSource = (path: string) => {
+    window.electron.store.set(STORE.SOURCE, path);
     setSource(path);
   };
   const handleChangeDestination = (path: string) => {
+    window.electron.store.set(STORE.DESTINATION, path);
     setDestination(path);
   };
 
