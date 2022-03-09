@@ -14,6 +14,7 @@ import '@fontsource/noto-sans-jp/300.css';
 import '@fontsource/noto-sans-jp/700.css';
 import '@fontsource/noto-sans-jp/900.css';
 import SettingModal from './SettingModal';
+import { LANGUAGES } from './constants';
 
 // constants of progress bar
 const PROGRESS_STATE = {
@@ -24,24 +25,11 @@ const PROGRESS_STATE = {
   COMPLETE: 4,
 };
 
-// constants of modal items
-const LANGUAGES = {
-  LNG_EN: '1',
-  LNG_JP: '2',
-};
-
 // constants of default settings
 const DEF_SETTINGS = {
   SOURCE: '/Users/user/Downloads/source',
   DESTINATION: '/Users/user/Downloads/destination',
   LANGUAGE: LANGUAGES.LNG_JP,
-};
-
-// constants of electron-store key
-const STORE = {
-  SOURCE: 'source',
-  DESTINATION: 'destination',
-  LANGUAGE: 'language',
 };
 
 const Index = () => {
@@ -51,30 +39,12 @@ const Index = () => {
   const [progress, setProgress] = useState(-1);
   // modal items
   const [modal, setModal] = useState(false);
-  const [source, setSource] = useState(DEF_SETTINGS.SOURCE);
-  const [destination, setDestination] = useState(DEF_SETTINGS.DESTINATION);
-  const [language, setLanguage] = useState<string>(DEF_SETTINGS.LANGUAGE);
-
-  // initialize settings with data got from electron-store
-  useEffect(() => {
-    let value = window.electron.store.get(STORE.SOURCE);
-
-    if (value) {
-      setSource(value);
-    }
-
-    value = window.electron.store.get(STORE.DESTINATION);
-
-    if (value) {
-      setDestination(value);
-    }
-
-    value = window.electron.store.get(STORE.LANGUAGE);
-
-    if (value) {
-      setLanguage(value);
-    }
-  }, []);
+  const [settings, setSettings] = useState({
+    source: window.electron.store.get('source') || DEF_SETTINGS.SOURCE,
+    destination:
+      window.electron.store.get('destination') || DEF_SETTINGS.DESTINATION,
+    language: window.electron.store.get('language') || DEF_SETTINGS.LANGUAGE,
+  });
 
   // IPC connection Listeners
   useEffect(() => {
@@ -122,17 +92,9 @@ const Index = () => {
   const handleCloseModal = () => setModal(false);
 
   // modal items
-  const handleChangeLanguage = (selectedLanguage: string) => {
-    window.electron.store.set(STORE.LANGUAGE, selectedLanguage);
-    setLanguage(selectedLanguage);
-  };
-  const handleChangeSource = (path: string) => {
-    window.electron.store.set(STORE.SOURCE, path);
-    setSource(path);
-  };
-  const handleChangeDestination = (path: string) => {
-    window.electron.store.set(STORE.DESTINATION, path);
-    setDestination(path);
+  const handleChangeSettings = (key: string, value: string) => {
+    window.electron.store.set(key, value);
+    setSettings({ ...settings, ...{ [key]: value } });
   };
 
   // set the overal style with mui
@@ -230,13 +192,9 @@ const Index = () => {
 
       <SettingModal
         modal={modal}
-        source={source}
-        destination={destination}
-        language={language}
+        settings={settings}
+        setSettings={handleChangeSettings}
         closeModal={handleCloseModal}
-        setLanguage={handleChangeLanguage}
-        setSource={handleChangeSource}
-        setDestination={handleChangeDestination}
       />
 
       <div>count: {count}</div>
@@ -284,7 +242,10 @@ const Index = () => {
           progressState !== PROGRESS_STATE.COMPLETE
         }
         onClick={() => {
-          window.electron.ipcRenderer.cpdir(source, destination);
+          window.electron.ipcRenderer.cpdir(
+            settings.source,
+            settings.destination
+          );
           setProgressState(PROGRESS_STATE.INITIALIZE);
           setProgress(0);
         }}

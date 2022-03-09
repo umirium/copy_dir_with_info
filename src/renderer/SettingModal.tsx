@@ -19,34 +19,22 @@ import {
   SelectChangeEvent,
   MenuItem,
 } from '@mui/material';
+import { LANGUAGES } from './constants';
 
 interface Props {
   modal: boolean;
+  closeModal: () => void;
+  settings: Settings;
+  setSettings: (key: string, value: string) => void;
+}
+
+interface Settings {
   source: string;
   destination: string;
   language: string;
-  closeModal: () => void;
-  setLanguage: (language: string) => void;
-  setSource: (source: string) => void;
-  setDestination: (destination: string) => void;
 }
 
-// constants of modal items
-const LANGUAGES = {
-  LNG_EN: '1',
-  LNG_JP: '2',
-};
-
-const SettingModal = ({
-  modal,
-  source,
-  destination,
-  language,
-  closeModal,
-  setLanguage,
-  setSource,
-  setDestination,
-}: Props) => {
+const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
   // backdrop
   const [backdrop, setBackdrop] = useState(false);
   // each input fields
@@ -77,7 +65,7 @@ const SettingModal = ({
 
   // modal items
   const handleChangeLanguage = (event: SelectChangeEvent) => {
-    setLanguage(event.target.value);
+    setSettings('language', event.target.value);
   };
 
   const handleClickSrc = () => {
@@ -89,7 +77,7 @@ const SettingModal = ({
     if (event.target.files && event.target.files.length !== 0) {
       const path = event.target.files[0].path.split('/');
       path.pop();
-      setSource(path.join('/'));
+      setSettings('source', path.join('/'));
       handleCloseBackdrop();
     }
   };
@@ -103,7 +91,7 @@ const SettingModal = ({
     if (event.target.files && event.target.files.length !== 0) {
       const path = event.target.files[0].path.split('/');
       path.pop();
-      setDestination(path.join('/'));
+      setSettings('destination', path.join('/'));
       handleCloseBackdrop();
     }
   };
@@ -163,7 +151,7 @@ const SettingModal = ({
                 id="source"
                 type="text"
                 ref={srcInputRef}
-                value={source}
+                value={settings.source}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -186,7 +174,7 @@ const SettingModal = ({
                 id="destination"
                 type="text"
                 ref={dstInputRef}
-                value={destination}
+                value={settings.destination}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -208,7 +196,7 @@ const SettingModal = ({
               <Select
                 labelId="select-language"
                 id="language"
-                value={language}
+                value={settings.language}
                 label="Language"
                 onChange={handleChangeLanguage}
               >
