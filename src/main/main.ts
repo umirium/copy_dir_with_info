@@ -63,7 +63,11 @@ const createWindow = async () => {
     await installExtensions();
   }
 
-  console.log(`electron-store file: ${app.getPath('userData')}/config.json`);
+  console.log(
+    `If you want to check electron-store, enter the following command: $ less "${app.getPath(
+      'userData'
+    )}/config.json"`
+  );
 
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')

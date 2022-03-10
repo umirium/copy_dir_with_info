@@ -17,19 +17,13 @@ import {
   SelectChangeEvent,
   MenuItem,
 } from '@mui/material';
-import { LANGUAGES } from './constants';
+import { LANGUAGES, Settings } from './constants';
 
 interface Props {
   modal: boolean;
   closeModal: () => void;
   settings: Settings;
   setSettings: (key: string, value: string) => void;
-}
-
-interface Settings {
-  source: string;
-  destination: string;
-  language: string;
 }
 
 const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
@@ -172,7 +166,8 @@ const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
                 <MenuItem value={LANGUAGES.LNG_JP}>Japanese</MenuItem>
               </Select>
             </FormControl>
-            <Box sx={{ mt: 6, flexGrow: 1, textAlign: 'right' }}>
+
+            <Box sx={{ mt: 6, flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <Grid item xs={6} sx={{ textAlign: 'left' }}>
                   <IconButton aria-label="lock">

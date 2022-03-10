@@ -14,7 +14,7 @@ import '@fontsource/noto-sans-jp/300.css';
 import '@fontsource/noto-sans-jp/700.css';
 import '@fontsource/noto-sans-jp/900.css';
 import SettingModal from './SettingModal';
-import { LANGUAGES } from './constants';
+import { LANGUAGES, Settings } from './constants';
 
 // constants of progress bar
 const PROGRESS_STATE = {
@@ -30,6 +30,7 @@ const DEF_SETTINGS = {
   SOURCE: '/Users/user/Downloads/source',
   DESTINATION: '/Users/user/Downloads/destination',
   LANGUAGE: LANGUAGES.LNG_JP,
+  PASSWORD: '',
 };
 
 const Index = () => {
@@ -39,11 +40,12 @@ const Index = () => {
   const [progress, setProgress] = useState(-1);
   // modal items
   const [modal, setModal] = useState(false);
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<Settings>({
     source: window.electron.store.get('source') || DEF_SETTINGS.SOURCE,
     destination:
       window.electron.store.get('destination') || DEF_SETTINGS.DESTINATION,
     language: window.electron.store.get('language') || DEF_SETTINGS.LANGUAGE,
+    password: window.electron.store.get('password') || DEF_SETTINGS.LANGUAGE,
   });
 
   // IPC connection Listeners
