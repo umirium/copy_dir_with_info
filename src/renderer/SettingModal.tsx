@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import FolderIcon from '@mui/icons-material/Folder';
 import LockIcon from '@mui/icons-material/Lock';
@@ -14,8 +14,6 @@ import {
   Select,
   Grid,
   Button,
-  Backdrop,
-  CircularProgress,
   SelectChangeEvent,
   MenuItem,
 } from '@mui/material';
@@ -35,33 +33,16 @@ interface Settings {
 }
 
 const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
-  // backdrop
-  const [backdrop, setBackdrop] = useState(false);
   // each input fields
   const srcUploadRef = useRef<HTMLInputElement>(null);
   const dstUploadRef = useRef<HTMLInputElement>(null);
   const srcInputRef = useRef<HTMLInputElement>(null);
   const dstInputRef = useRef<HTMLInputElement>(null);
 
-  // add attribute to file uploaders
-  useEffect(() => {
-    if (!srcUploadRef.current) return;
-    srcUploadRef.current.setAttribute('directory', '');
-    srcUploadRef.current.setAttribute('webkitdirectory', '');
-
-    if (!dstUploadRef.current) return;
-    dstUploadRef.current.setAttribute('directory', '');
-    dstUploadRef.current.setAttribute('webkitdirectory', '');
-  });
-
   // modal control
   const handleCloseModal = () => {
     closeModal();
   };
-
-  // backdrop while selecting folder paths
-  const handleOpenBackdrop = () => setBackdrop(true);
-  const handleCloseBackdrop = () => setBackdrop(false);
 
   // modal items
   const handleChangeLanguage = (event: SelectChangeEvent) => {
@@ -71,28 +52,24 @@ const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
   const handleClickSrc = () => {
     if (!srcUploadRef.current) throw Error('srcUploadRef is not assigned');
     srcUploadRef.current.click();
-    handleOpenBackdrop();
   };
   const handleChangeSrcInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length !== 0) {
       const path = event.target.files[0].path.split('/');
       path.pop();
       setSettings('source', path.join('/'));
-      handleCloseBackdrop();
     }
   };
 
   const handleClickDst = () => {
     if (!dstUploadRef.current) throw Error('dstUploadRef is not assigned');
     dstUploadRef.current.click();
-    handleOpenBackdrop();
   };
   const handleChangeDstInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length !== 0) {
       const path = event.target.files[0].path.split('/');
       path.pop();
       setSettings('destination', path.join('/'));
-      handleCloseBackdrop();
     }
   };
 
@@ -111,15 +88,6 @@ const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
         type="file"
         onChange={handleChangeDstInput}
       />
-
-      <div>
-        <Backdrop
-          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1301 }}
-          open={backdrop}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
 
       <Modal
         open={modal}
