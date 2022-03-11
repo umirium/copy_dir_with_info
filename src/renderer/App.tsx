@@ -15,6 +15,7 @@ import '@fontsource/noto-sans-jp/700.css';
 import '@fontsource/noto-sans-jp/900.css';
 import SettingModal from './SettingModal';
 import { LANGUAGES, Settings } from './constants';
+import PasswordModal from './PasswordModal';
 
 // constants of progress bar
 const PROGRESS_STATE = {
@@ -38,14 +39,16 @@ const Index = () => {
   // copy progress
   const [progressState, setProgressState] = useState(PROGRESS_STATE.NONE);
   const [progress, setProgress] = useState(-1);
-  // modal items
-  const [modal, setModal] = useState(false);
+  // modal of setting administrator password
+  const [setupPassModal, setSetupPassModal] = useState(false);
+  // setting modal items
+  const [settingModal, setSettingModal] = useState(false);
   const [settings, setSettings] = useState<Settings>({
     source: window.electron.store.get('source') || DEF_SETTINGS.SOURCE,
     destination:
       window.electron.store.get('destination') || DEF_SETTINGS.DESTINATION,
     language: window.electron.store.get('language') || DEF_SETTINGS.LANGUAGE,
-    password: window.electron.store.get('password') || DEF_SETTINGS.LANGUAGE,
+    password: window.electron.store.get('password') || DEF_SETTINGS.PASSWORD,
   });
 
   // IPC connection Listeners
@@ -58,6 +61,13 @@ const Index = () => {
       setProgress(percent * 2);
     });
   }, []);
+
+  // If administrator password isn't set, show password setting modal.
+  useEffect(() => {
+    if (!settings.password) {
+      setSetupPassModal(true);
+    }
+  }, [settings.password]);
 
   // copy progress
   useEffect(() => {
@@ -90,8 +100,9 @@ const Index = () => {
   };
 
   // modal control
-  const handleOpenModal = () => setModal(true);
-  const handleCloseModal = () => setModal(false);
+  const handleCloseSetupPassModal = () => setSetupPassModal(false);
+  const handleOpenSettingModal = () => setSettingModal(true);
+  const handleCloseSettingModal = () => setSettingModal(false);
 
   // modal items
   const handleChangeSettings = (key: string, value: string) => {
@@ -187,16 +198,22 @@ const Index = () => {
       </Stack>
 
       <Box sx={{ textAlign: 'right' }}>
-        <IconButton aria-label="settings" onClick={handleOpenModal}>
+        <IconButton aria-label="settings" onClick={handleOpenSettingModal}>
           <SettingsIcon sx={{ fontSize: 30, cursor: 'pointer' }} />
         </IconButton>
       </Box>
 
+      <PasswordModal
+        modal={setupPassModal}
+        setSettings={handleChangeSettings}
+        closeModal={handleCloseSetupPassModal}
+      />
+
       <SettingModal
-        modal={modal}
+        modal={settingModal}
         settings={settings}
         setSettings={handleChangeSettings}
-        closeModal={handleCloseModal}
+        closeModal={handleCloseSettingModal}
       />
 
       <div>count: {count}</div>
