@@ -14,7 +14,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sha512 } from 'js-sha512';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 interface Props {
   modal: boolean;
@@ -60,6 +60,8 @@ const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
   const [transition, setTransition] = useState<
     React.ComponentType<TransitionProps> | undefined
   >(undefined);
+  // refer to button
+  const button = useRef<HTMLButtonElement>(null);
 
   // Process of form submission after form validation has passed.
   const onSubmit: SubmitHandler<FormInput> = (data) => {
@@ -89,6 +91,12 @@ const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
       </IconButton>
     </>
   );
+
+  // process when enter key is pressed on text fields
+  const pressEnterKey = () => {
+    if (!button.current) throw Error('submit is not assigned');
+    button.current.click();
+  };
 
   return (
     <>
@@ -138,6 +146,12 @@ const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
               fullWidth
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...register('password')}
+              onKeyPress={(ev) => {
+                if (ev.key === 'Enter') {
+                  ev.preventDefault();
+                  pressEnterKey();
+                }
+              }}
             />
           </Box>
 
@@ -150,12 +164,22 @@ const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
               fullWidth
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...register('confirm')}
+              onKeyPress={(ev) => {
+                if (ev.key === 'Enter') {
+                  ev.preventDefault();
+                  pressEnterKey();
+                }
+              }}
             />
           </Box>
 
           <Typography id="modal-description" component="div" sx={{ mt: 2 }}>
             <Box sx={{ mt: 6, textAlign: 'right' }}>
-              <Button variant="contained" onClick={handleSubmit(onSubmit)}>
+              <Button
+                variant="contained"
+                ref={button}
+                onClick={handleSubmit(onSubmit)}
+              >
                 send
               </Button>
             </Box>
