@@ -114,9 +114,6 @@ const Index = () => {
   const appStyle = css({
     textAlign: 'center',
     fontFamily: 'Noto Sans JP',
-    div: {
-      paddingTop: '1em',
-    },
   });
 
   // extend style of mui's button
