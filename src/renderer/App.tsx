@@ -2,12 +2,11 @@ import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useEffect, useState } from 'react';
 import AlbumIcon from '@mui/icons-material/Album';
-import SettingsIcon from '@mui/icons-material/Settings';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
-import { Box, IconButton, LinearProgress } from '@mui/material';
+import { Box, LinearProgress } from '@mui/material';
 import '@fontsource/noto-sans-jp/';
 import '@fontsource/noto-sans-jp/100.css';
 import '@fontsource/noto-sans-jp/300.css';
@@ -42,7 +41,6 @@ const Index = () => {
   // modal of setting administrator password
   const [setupPassModal, setSetupPassModal] = useState(false);
   // setting modal items
-  const [settingModal, setSettingModal] = useState(false);
   const [settings, setSettings] = useState<Settings>({
     source: window.electron.store.get('source') || DEF_SETTINGS.SOURCE,
     destination:
@@ -101,8 +99,6 @@ const Index = () => {
 
   // modal control
   const handleCloseSetupPassModal = () => setSetupPassModal(false);
-  const handleOpenSettingModal = () => setSettingModal(true);
-  const handleCloseSettingModal = () => setSettingModal(false);
 
   // modal items
   const handleChangeSettings = (key: string, value: string) => {
@@ -195,22 +191,13 @@ const Index = () => {
       </Stack>
 
       <Box sx={{ textAlign: 'right' }}>
-        <IconButton aria-label="settings" onClick={handleOpenSettingModal}>
-          <SettingsIcon sx={{ fontSize: 30, cursor: 'pointer' }} />
-        </IconButton>
+        <SettingModal settings={settings} setSettings={handleChangeSettings} />
       </Box>
 
       <PasswordModal
         modal={setupPassModal}
         setSettings={handleChangeSettings}
         closeModal={handleCloseSetupPassModal}
-      />
-
-      <SettingModal
-        modal={settingModal}
-        settings={settings}
-        setSettings={handleChangeSettings}
-        closeModal={handleCloseSettingModal}
       />
 
       <div>count: {count}</div>

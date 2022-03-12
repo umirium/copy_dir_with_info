@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
+import SettingsIcon from '@mui/icons-material/Settings';
 import CloseIcon from '@mui/icons-material/Close';
 import FolderIcon from '@mui/icons-material/Folder';
 import LockIcon from '@mui/icons-material/Lock';
@@ -20,23 +21,24 @@ import {
 import { LANGUAGES, Settings } from './constants';
 
 interface Props {
-  modal: boolean;
-  closeModal: () => void;
   settings: Settings;
   setSettings: (key: string, value: string) => void;
 }
 
-const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
+const SettingModal = ({ settings, setSettings }: Props) => {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   // each input fields
   const srcUploadRef = useRef<HTMLInputElement>(null);
   const dstUploadRef = useRef<HTMLInputElement>(null);
   const srcInputRef = useRef<HTMLInputElement>(null);
   const dstInputRef = useRef<HTMLInputElement>(null);
-
-  // modal control
-  const handleCloseModal = () => {
-    closeModal();
-  };
 
   // modal items
   const handleChangeLanguage = (event: SelectChangeEvent) => {
@@ -47,7 +49,7 @@ const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
     if (!srcUploadRef.current) throw Error('srcUploadRef is not assigned');
     srcUploadRef.current.click();
   };
-  const handleChangeSrcInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeSrcInput = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length !== 0) {
       const path = event.target.files[0].path.split('/');
       path.pop();
@@ -59,7 +61,7 @@ const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
     if (!dstUploadRef.current) throw Error('dstUploadRef is not assigned');
     dstUploadRef.current.click();
   };
-  const handleChangeDstInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeDstInput = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length !== 0) {
       const path = event.target.files[0].path.split('/');
       path.pop();
@@ -83,9 +85,13 @@ const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
         onChange={handleChangeDstInput}
       />
 
+      <IconButton aria-label="settings" onClick={handleOpen}>
+        <SettingsIcon sx={{ fontSize: 30, cursor: 'pointer' }} />
+      </IconButton>
+
       <Modal
-        open={modal}
-        onClose={handleCloseModal}
+        open={open}
+        onClose={handleClose}
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
@@ -178,7 +184,7 @@ const SettingModal = ({ modal, closeModal, settings, setSettings }: Props) => {
                   <Button
                     variant="contained"
                     startIcon={<CloseIcon />}
-                    onClick={handleCloseModal}
+                    onClick={handleClose}
                   >
                     close
                   </Button>
