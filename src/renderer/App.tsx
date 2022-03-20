@@ -31,6 +31,7 @@ const DEF_SETTINGS = {
   DESTINATION: '/Users/user/Downloads/destination',
   LANGUAGE: LANGUAGES.LNG_JP,
   PASSWORD: '',
+  LOCK: true,
 };
 
 const Index = () => {
@@ -47,6 +48,7 @@ const Index = () => {
       window.electron.store.get('destination') || DEF_SETTINGS.DESTINATION,
     language: window.electron.store.get('language') || DEF_SETTINGS.LANGUAGE,
     password: window.electron.store.get('password') || DEF_SETTINGS.PASSWORD,
+    lock: DEF_SETTINGS.LOCK,
   });
 
   // IPC connection Listeners
@@ -101,9 +103,13 @@ const Index = () => {
   const handleCloseSetupPassModal = () => setSetupPassModal(false);
 
   // modal items
-  const handleChangeSettings = (key: string, value: string) => {
-    window.electron.store.set(key, value);
+  const handleChangeSettings = (key: string, value: string | boolean) => {
     setSettings({ ...settings, ...{ [key]: value } });
+
+    // Only lock of settings is not saved.
+    if (key !== 'lock') {
+      window.electron.store.set(key, value);
+    }
   };
 
   // set the overal style with mui

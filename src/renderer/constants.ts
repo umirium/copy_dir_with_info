@@ -1,8 +1,9 @@
 export type Settings = {
-  source: 'string';
-  destination: 'string';
-  language: 'string';
-  password: 'string';
+  source: string;
+  destination: string;
+  language: string;
+  password: string;
+  lock: boolean;
 };
 
 export const LANGUAGES = {

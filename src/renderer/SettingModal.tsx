@@ -2,7 +2,6 @@ import { ChangeEvent, useRef, useState } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CloseIcon from '@mui/icons-material/Close';
 import FolderIcon from '@mui/icons-material/Folder';
-import LockIcon from '@mui/icons-material/Lock';
 import {
   Modal,
   Box,
@@ -19,10 +18,11 @@ import {
   MenuItem,
 } from '@mui/material';
 import { LANGUAGES, ModalStyle, Settings } from './constants';
+import UnlockModal from './UnlockModal';
 
 interface Props {
   settings: Settings;
-  setSettings: (key: string, value: string) => void;
+  setSettings: (key: string, value: string | boolean) => void;
 }
 
 const SettingModal = ({ settings, setSettings }: Props) => {
@@ -31,6 +31,9 @@ const SettingModal = ({ settings, setSettings }: Props) => {
     setOpen(true);
   };
   const handleClose = () => {
+    // lock settings at end of modal
+    setSettings('lock', true);
+
     setOpen(false);
   };
 
@@ -113,6 +116,7 @@ const SettingModal = ({ settings, setSettings }: Props) => {
                       aria-label="select source directory"
                       onClick={handleClickSrc}
                       edge="end"
+                      disabled={settings.lock}
                     >
                       <FolderIcon />
                     </IconButton>
@@ -136,6 +140,7 @@ const SettingModal = ({ settings, setSettings }: Props) => {
                       aria-label="select destination directory"
                       onClick={handleClickDst}
                       edge="end"
+                      disabled={settings.lock}
                     >
                       <FolderIcon />
                     </IconButton>
@@ -163,10 +168,9 @@ const SettingModal = ({ settings, setSettings }: Props) => {
             <Box sx={{ mt: 6, flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <Grid item xs={6} sx={{ textAlign: 'left' }}>
-                  <IconButton aria-label="lock">
-                    <LockIcon sx={{ fontSize: 30, cursor: 'pointer' }} />
-                  </IconButton>
+                  <UnlockModal settings={settings} setSettings={setSettings} />
                 </Grid>
+
                 <Grid item xs={6} sx={{ textAlign: 'right' }}>
                   <Button
                     variant="contained"
