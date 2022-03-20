@@ -11,6 +11,11 @@ export const LANGUAGES = {
   LNG_JP: '2',
 };
 
+export type ModalProps = {
+  settings: Settings;
+  setSettings: (key: string, value: string | boolean) => void;
+};
+
 // default modal style
 export const ModalStyle = {
   position: 'absolute' as const,

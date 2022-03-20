@@ -10,12 +10,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sha512 } from 'js-sha512';
-import { ModalStyle, Settings } from './constants';
-
-interface Props {
-  settings: Settings;
-  setSettings: (key: string, value: string | boolean) => void;
-}
+import { ModalProps, ModalStyle } from './constants';
 
 // type of form
 type FormInput = {
@@ -25,7 +20,7 @@ type FormInput = {
 // form validation rules
 const validRules = yup.object({});
 
-const UnlockModal = ({ settings, setSettings }: Props) => {
+const UnlockModal = ({ settings, setSettings }: ModalProps) => {
   const {
     getValues,
     handleSubmit,

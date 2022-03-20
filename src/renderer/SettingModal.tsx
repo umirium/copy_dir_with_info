@@ -17,15 +17,10 @@ import {
   SelectChangeEvent,
   MenuItem,
 } from '@mui/material';
-import { LANGUAGES, ModalStyle, Settings } from './constants';
+import { LANGUAGES, ModalProps, ModalStyle } from './constants';
 import UnlockModal from './UnlockModal';
 
-interface Props {
-  settings: Settings;
-  setSettings: (key: string, value: string | boolean) => void;
-}
-
-const SettingModal = ({ settings, setSettings }: Props) => {
+const SettingModal = ({ settings, setSettings }: ModalProps) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(true);

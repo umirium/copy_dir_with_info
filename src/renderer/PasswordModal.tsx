@@ -15,13 +15,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sha512 } from 'js-sha512';
 import { useRef, useState } from 'react';
-import { ModalStyle } from './constants';
-
-interface Props {
-  modal: boolean;
-  closeModal: () => void;
-  setSettings: (key: string, value: string) => void;
-}
+import { ModalProps, ModalStyle } from './constants';
 
 // type of form
 type FormInput = {
@@ -48,14 +42,9 @@ function TransitionUp(props: TransitionProps) {
   return <Slide {...props} direction="up" />;
 }
 
-const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormInput>({
-    resolver: yupResolver(validRules),
-  });
+const PasswordModal = ({ settings, setSettings }: ModalProps) => {
+  // modal status (Modal opens only if password is not set)
+  const [open, setOpen] = useState(!settings.password);
   // snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [transition, setTransition] = useState<
@@ -64,6 +53,14 @@ const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
   // refer to button
   const button = useRef<HTMLButtonElement>(null);
 
+  // form validator
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormInput>({
+    resolver: yupResolver(validRules),
+  });
   // Process of form submission after form validation has passed.
   const onSubmit: SubmitHandler<FormInput> = (data) => {
     // show snackbar
@@ -72,7 +69,7 @@ const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
 
     // encrypt password and store it in electron-store
     setSettings('password', sha512(data.password));
-    closeModal();
+    setOpen(false);
   };
 
   const handleSnackbarClose = () => {
@@ -112,7 +109,7 @@ const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
       />
 
       <Modal
-        open={modal}
+        open={open}
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
         disableEnforceFocus

@@ -39,8 +39,6 @@ const Index = () => {
   // copy progress
   const [progressState, setProgressState] = useState(PROGRESS_STATE.NONE);
   const [progress, setProgress] = useState(-1);
-  // modal of setting administrator password
-  const [setupPassModal, setSetupPassModal] = useState(false);
   // setting modal items
   const [settings, setSettings] = useState<Settings>({
     source: window.electron.store.get('source') || DEF_SETTINGS.SOURCE,
@@ -61,13 +59,6 @@ const Index = () => {
       setProgress(percent * 2);
     });
   }, []);
-
-  // If administrator password isn't set, show password setting modal.
-  useEffect(() => {
-    if (!settings.password) {
-      setSetupPassModal(true);
-    }
-  }, [settings.password]);
 
   // copy progress
   useEffect(() => {
@@ -98,9 +89,6 @@ const Index = () => {
   const reset = () => {
     setCount(0);
   };
-
-  // modal control
-  const handleCloseSetupPassModal = () => setSetupPassModal(false);
 
   // modal items
   const handleChangeSettings = (key: string, value: string | boolean) => {
@@ -200,11 +188,8 @@ const Index = () => {
         <SettingModal settings={settings} setSettings={handleChangeSettings} />
       </Box>
 
-      <PasswordModal
-        modal={setupPassModal}
-        setSettings={handleChangeSettings}
-        closeModal={handleCloseSetupPassModal}
-      />
+      {/* If administrator password isn't set, show password setting modal. */}
+      <PasswordModal settings={settings} setSettings={handleChangeSettings} />
 
       <div>count: {count}</div>
 
