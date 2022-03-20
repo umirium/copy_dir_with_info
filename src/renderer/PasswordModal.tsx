@@ -15,6 +15,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sha512 } from 'js-sha512';
 import { useRef, useState } from 'react';
+import { ModalStyle } from './constants';
 
 interface Props {
   modal: boolean;
@@ -100,17 +101,15 @@ const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
 
   return (
     <>
-      <div>
-        <Snackbar
-          open={snackbarOpen}
-          onClose={handleSnackbarClose}
-          TransitionComponent={transition}
-          message="Your password is set successfully!"
-          key={transition ? transition.name : ''}
-          autoHideDuration={3000}
-          action={snapbarAction}
-        />
-      </div>
+      <Snackbar
+        open={snackbarOpen}
+        onClose={handleSnackbarClose}
+        TransitionComponent={transition}
+        message="Your password is set successfully!"
+        key={transition ? transition.name : ''}
+        autoHideDuration={3000}
+        action={snapbarAction}
+      />
 
       <Modal
         open={modal}
@@ -118,20 +117,7 @@ const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
         aria-describedby="modal-description"
         disableEnforceFocus
       >
-        <Box
-          sx={{
-            position: 'absolute' as const,
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            border: '0px solid #000',
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
-          }}
-        >
+        <Box sx={{ ...ModalStyle }}>
           <Typography id="modal-title" variant="h6" component="h2">
             Please set your password.
           </Typography>
@@ -173,17 +159,15 @@ const PasswordModal = ({ modal, closeModal, setSettings }: Props) => {
             />
           </Box>
 
-          <Typography id="modal-description" component="div" sx={{ mt: 2 }}>
-            <Box sx={{ mt: 6, textAlign: 'right' }}>
-              <Button
-                variant="contained"
-                ref={button}
-                onClick={handleSubmit(onSubmit)}
-              >
-                send
-              </Button>
-            </Box>
-          </Typography>
+          <Box sx={{ mt: 6, textAlign: 'right' }}>
+            <Button
+              variant="contained"
+              ref={button}
+              onClick={handleSubmit(onSubmit)}
+            >
+              send
+            </Button>
+          </Box>
         </Box>
       </Modal>
     </>

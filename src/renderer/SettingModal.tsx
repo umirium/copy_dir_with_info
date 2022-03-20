@@ -18,7 +18,7 @@ import {
   SelectChangeEvent,
   MenuItem,
 } from '@mui/material';
-import { LANGUAGES, Settings } from './constants';
+import { LANGUAGES, ModalStyle, Settings } from './constants';
 
 interface Props {
   settings: Settings;
@@ -95,20 +95,7 @@ const SettingModal = ({ settings, setSettings }: Props) => {
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <Box
-          sx={{
-            position: 'absolute' as const,
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            border: '0px solid #000',
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
-          }}
-        >
+        <Box sx={{ ...ModalStyle, width: 500 }}>
           <Typography id="modal-title" variant="h6" component="h2">
             Settings
           </Typography>
