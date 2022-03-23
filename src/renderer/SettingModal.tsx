@@ -17,6 +17,7 @@ import {
   SelectChangeEvent,
   MenuItem,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { LANGUAGES, ModalProps, ModalStyle } from './constants';
 import UnlockModal from './UnlockModal';
 
@@ -31,6 +32,8 @@ const SettingModal = ({ settings, setSettings }: ModalProps) => {
 
     setOpen(false);
   };
+  // localization
+  const [t] = useTranslation();
 
   // each input fields
   const srcUploadRef = useRef<HTMLInputElement>(null);
@@ -95,11 +98,11 @@ const SettingModal = ({ settings, setSettings }: ModalProps) => {
       >
         <Box sx={{ ...ModalStyle, width: 500 }}>
           <Typography id="modal-title" variant="h6" component="h2">
-            Settings
+            {t('Settings')}
           </Typography>
           <Typography id="modal-description" component="div" sx={{ mt: 2 }}>
             <FormControl variant="outlined" fullWidth>
-              <InputLabel htmlFor="source">Source</InputLabel>
+              <InputLabel htmlFor="source">{t('Source')}</InputLabel>
               <OutlinedInput
                 id="source"
                 type="text"
@@ -123,7 +126,7 @@ const SettingModal = ({ settings, setSettings }: ModalProps) => {
             </FormControl>
 
             <FormControl variant="outlined" sx={{ mt: 2 }} fullWidth>
-              <InputLabel htmlFor="destination">Destination</InputLabel>
+              <InputLabel htmlFor="destination">{t('Destination')}</InputLabel>
               <OutlinedInput
                 id="destination"
                 type="text"
@@ -147,7 +150,7 @@ const SettingModal = ({ settings, setSettings }: ModalProps) => {
             </FormControl>
 
             <FormControl fullWidth sx={{ mt: 4 }}>
-              <InputLabel id="select-language">Language</InputLabel>
+              <InputLabel id="select-language">{t('Language')}</InputLabel>
               <Select
                 labelId="select-language"
                 id="language"
@@ -155,8 +158,8 @@ const SettingModal = ({ settings, setSettings }: ModalProps) => {
                 label="Language"
                 onChange={handleChangeLanguage}
               >
-                <MenuItem value={LANGUAGES.LNG_EN}>English</MenuItem>
-                <MenuItem value={LANGUAGES.LNG_JP}>Japanese</MenuItem>
+                <MenuItem value={LANGUAGES.LNG_EN}>{t('English')}</MenuItem>
+                <MenuItem value={LANGUAGES.LNG_JP}>{t('Japanese')}</MenuItem>
               </Select>
             </FormControl>
 
@@ -172,7 +175,7 @@ const SettingModal = ({ settings, setSettings }: ModalProps) => {
                     startIcon={<CloseIcon />}
                     onClick={handleClose}
                   >
-                    close
+                    {t('close')}
                   </Button>
                 </Grid>
               </Grid>

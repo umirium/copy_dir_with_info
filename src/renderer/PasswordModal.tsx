@@ -14,7 +14,8 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sha512 } from 'js-sha512';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ModalProps, ModalStyle } from './constants';
 
 // type of form
@@ -24,16 +25,7 @@ type FormInput = {
 };
 
 // form validation rules
-const validRules = yup.object({
-  password: yup
-    .string()
-    .required('* Please enter your password')
-    .min(6, '* Your password is too short'),
-  confirm: yup
-    .string()
-    .required('* Please retype your password')
-    .oneOf([yup.ref('password')], '* Your passwords do not match.'),
-});
+let validRules: any = null;
 
 type TransitionProps = Omit<SlideProps, 'direction'>;
 
@@ -52,6 +44,21 @@ const PasswordModal = ({ settings, setSettings }: ModalProps) => {
   >(undefined);
   // refer to button
   const button = useRef<HTMLButtonElement>(null);
+  // localization
+  const [t] = useTranslation();
+
+  useEffect(() => {
+    validRules = yup.object({
+      password: yup
+        .string()
+        .required(`* ${t('Please enter your password')}`)
+        .min(6, `* ${t('Your password is too short')}`),
+      confirm: yup
+        .string()
+        .required(`* ${t('Please retype your password')}`)
+        .oneOf([yup.ref('password')], `* ${t('Your passwords do not match.')}`),
+    });
+  });
 
   // form validator
   const {
@@ -102,7 +109,7 @@ const PasswordModal = ({ settings, setSettings }: ModalProps) => {
         open={snackbarOpen}
         onClose={handleSnackbarClose}
         TransitionComponent={transition}
-        message="Your password is set successfully!"
+        message={t('Your password is set successfully')}
         key={transition ? transition.name : ''}
         autoHideDuration={3000}
         action={snapbarAction}
@@ -116,13 +123,13 @@ const PasswordModal = ({ settings, setSettings }: ModalProps) => {
       >
         <Box sx={{ ...ModalStyle }}>
           <Typography id="modal-title" variant="h6" component="h2">
-            Please set your password.
+            {t('Please set your password.')}
           </Typography>
 
           <Box sx={{ mt: 2 }}>
             <TextField
               type="password"
-              label="Password"
+              label={t('Password')}
               error={'password' in errors}
               helperText={errors.password?.message}
               autoFocus
@@ -141,7 +148,7 @@ const PasswordModal = ({ settings, setSettings }: ModalProps) => {
           <Box sx={{ mt: 2 }}>
             <TextField
               type="password"
-              label="Confirm"
+              label={t('Confirm')}
               error={'confirm' in errors}
               helperText={errors.confirm?.message}
               fullWidth
@@ -162,7 +169,7 @@ const PasswordModal = ({ settings, setSettings }: ModalProps) => {
               ref={button}
               onClick={handleSubmit(onSubmit)}
             >
-              send
+              {t('send')}
             </Button>
           </Box>
         </Box>

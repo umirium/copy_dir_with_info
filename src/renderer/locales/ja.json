@@ -1,0 +1,30 @@
+{
+  "create directory": "ディレクトリ作成",
+  "copy directory": "ディレクトリコピー",
+  "initializing...": "初期化中...",
+  "processing...": "処理中...",
+  "completed!": "コピー完了",
+
+  "Settings": "設定",
+  "Source": "コピー元",
+  "Destination": "コピー先",
+  "Language": "言語",
+  "English": "英語",
+  "Japanese": "日本語",
+  "close": "閉じる",
+
+  "Password is incorrect": "パスワードが一致しません",
+  "Enter administrator password": "管理者パスワードを入力してください",
+  "Password": "パスワード",
+  "Cancel": "キャンセル",
+  "Unlock": "ロック解除",
+
+  "Please enter your password": "パスワードを入力してください",
+  "Your password is too short": "パスワードが短すぎます",
+  "Please retype your password": "再度パスワードを入力してください",
+  "Your passwords do not match.": "パスワードが一致しません",
+  "Your password is set successfully": "パスワード設定に成功しました",
+  "Please set your password.": "管理者パスワードを設定してください",
+  "Confirm": "確認",
+  "send": "送信"
+}

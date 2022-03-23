@@ -1,0 +1,30 @@
+{
+  "create directory": "create directory",
+  "copy directory": "copy directory",
+  "initializing...": "initializing...",
+  "processing...": "processing...",
+  "completed!": "completed!",
+
+  "Settings": "Settings",
+  "Source": "Source",
+  "Destination": "Destination",
+  "Language": "Language",
+  "English": "English",
+  "Japanese": "Japanese",
+  "close": "close",
+
+  "Password is incorrect": "Password is incorrect",
+  "Enter administrator password": "Enter administrator password",
+  "Password": "Password",
+  "Cancel": "Cancel",
+  "Unlock": "Unlock",
+
+  "Please enter your password": "Please enter your password",
+  "Your password is too short": "Your password is too short",
+  "Please retype your password": "Please retype your password",
+  "Your passwords do not match.": "Your passwords do not match.",
+  "Your password is set successfully": "Your password is set successfully",
+  "Please set your password.": "Please set your password.",
+  "Confirm": "Confirm",
+  "send": "send"
+}

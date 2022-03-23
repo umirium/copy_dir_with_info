@@ -7,8 +7,8 @@ export type Settings = {
 };
 
 export const LANGUAGES = {
-  LNG_EN: '1',
-  LNG_JP: '2',
+  LNG_EN: 'en',
+  LNG_JP: 'ja',
 };
 
 export type ModalProps = {

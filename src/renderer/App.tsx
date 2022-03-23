@@ -12,9 +12,25 @@ import '@fontsource/noto-sans-jp/100.css';
 import '@fontsource/noto-sans-jp/300.css';
 import '@fontsource/noto-sans-jp/700.css';
 import '@fontsource/noto-sans-jp/900.css';
+import * as i18next from 'i18next';
+import { initReactI18next, useTranslation } from 'react-i18next';
 import SettingModal from './SettingModal';
 import { LANGUAGES, Settings } from './constants';
 import PasswordModal from './PasswordModal';
+
+import enJson from './locales/en.json';
+import jaJson from './locales/ja.json';
+
+i18next.use(initReactI18next).init({
+  debug: true,
+  resources: {
+    en: { translation: enJson },
+    ja: { translation: jaJson },
+  },
+  lng: 'ja',
+  fallbackLng: false,
+  returnEmptyString: false,
+});
 
 // constants of progress bar
 const PROGRESS_STATE = {
@@ -48,6 +64,11 @@ const Index = () => {
     password: window.electron.store.get('password') || DEF_SETTINGS.PASSWORD,
     lock: DEF_SETTINGS.LOCK,
   });
+  // localization
+  const [t, i18n] = useTranslation();
+  useEffect(() => {
+    i18n.changeLanguage(settings.language);
+  }, [settings.language, i18n]);
 
   // IPC connection Listeners
   useEffect(() => {
@@ -155,14 +176,14 @@ const Index = () => {
               }}
             >
               {progressState === PROGRESS_STATE.INITIALIZE
-                ? 'initializing...'
-                : 'processing...'}
+                ? t('initializing...')
+                : t('processing...')}
             </Box>
           </>
         );
 
       case PROGRESS_STATE.COMPLETE:
-        return <div>completed!</div>;
+        return <div>{t('completed!')}</div>;
 
       default:
         return <></>;
@@ -202,7 +223,7 @@ const Index = () => {
           fontWeight: 'bold',
         }}
       >
-        太字のテストです。
+        太字のテストです。入力
       </div>
 
       <div
@@ -225,7 +246,7 @@ const Index = () => {
           ]);
         }}
       >
-        create directory
+        {t('create directory')}
       </Button>
 
       <MyButton
@@ -244,7 +265,7 @@ const Index = () => {
           setProgress(0);
         }}
       >
-        copy directory
+        {t('copy directory')}
       </MyButton>
 
       {progressBar()}

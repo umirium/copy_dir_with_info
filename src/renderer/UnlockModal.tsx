@@ -11,6 +11,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sha512 } from 'js-sha512';
 import { ModalProps, ModalStyle } from './constants';
+import { useTranslation } from 'react-i18next';
 
 // type of form
 type FormInput = {
@@ -50,6 +51,8 @@ const UnlockModal = ({ settings, setSettings }: ModalProps) => {
     reset({ password: '' });
     setOpen(false);
   };
+  // localization
+  const [t] = useTranslation();
 
   // process when enter key is pressed on text fields
   const pressEnterKey = () => {
@@ -76,7 +79,7 @@ const UnlockModal = ({ settings, setSettings }: ModalProps) => {
 
     setError('password', {
       type: 'manual',
-      message: 'Password is incorrect',
+      message: t('Password is incorrect'),
     });
   };
 
@@ -92,12 +95,12 @@ const UnlockModal = ({ settings, setSettings }: ModalProps) => {
 
       <Modal hideBackdrop open={open}>
         <Box sx={{ ...ModalStyle, width: 350, border: '1px solid #000' }}>
-          <h3>Enter administrator password</h3>
+          <h3>{t('Enter administrator password')}</h3>
 
           <Box sx={{ mt: 2 }}>
             <TextField
               type="password"
-              label="Password"
+              label={t('Password')}
               error={'password' in errors}
               helperText={errors.password?.message}
               autoFocus
@@ -122,7 +125,7 @@ const UnlockModal = ({ settings, setSettings }: ModalProps) => {
               startIcon={<CloseIcon />}
               onClick={handleClose}
             >
-              Cancel
+              {t('Cancel')}
             </Button>
 
             <Button
@@ -132,7 +135,7 @@ const UnlockModal = ({ settings, setSettings }: ModalProps) => {
               sx={{ ml: 2 }}
               onClick={handleSubmit(onSubmit)}
             >
-              Unlock
+              {t('Unlock')}
             </Button>
           </Box>
         </Box>
