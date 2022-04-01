@@ -1,12 +1,9 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-const validChannels = ['ipc-example', 'mkdir', 'cpdir'];
+const validChannels = ['ipc-example', 'cpdir'];
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
-    mkdir(dirpath, files) {
-      return ipcRenderer.send('mkdir', dirpath, files);
-    },
     cpdir(source, distination) {
       ipcRenderer.send('cpdir', source, distination);
     },

@@ -1,17 +1,10 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useEffect, useState } from 'react';
-import AlbumIcon from '@mui/icons-material/Album';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { css } from '@emotion/react';
 import { Box, LinearProgress } from '@mui/material';
-import '@fontsource/noto-sans-jp/';
-import '@fontsource/noto-sans-jp/100.css';
-import '@fontsource/noto-sans-jp/300.css';
-import '@fontsource/noto-sans-jp/700.css';
-import '@fontsource/noto-sans-jp/900.css';
 import * as i18next from 'i18next';
 import { initReactI18next, useTranslation } from 'react-i18next';
 import SettingModal from './SettingModal';
@@ -50,7 +43,6 @@ const DEF_SETTINGS = {
 };
 
 const Index = () => {
-  const [count, setCount] = useState<number>(0);
   // copy progress
   const [progressState, setProgressState] = useState(PROGRESS_STATE.NONE);
   const [progress, setProgress] = useState(-1);
@@ -71,9 +63,6 @@ const Index = () => {
 
   // IPC connection Listeners
   useEffect(() => {
-    window.electron.ipcRenderer.on('mkdir', (result: boolean) => {
-      console.log(`make directory: ${result}`);
-    });
     window.electron.ipcRenderer.on('cpdir', (percent: number) => {
       setProgress(percent);
     });
@@ -94,18 +83,6 @@ const Index = () => {
       setProgressState(PROGRESS_STATE.COMPLETE);
     }
   }, [progress]);
-
-  const increment = () => {
-    setCount(count + 1);
-  };
-
-  const decrement = () => {
-    setCount(count - 1);
-  };
-
-  const reset = () => {
-    setCount(0);
-  };
 
   // modal items
   const handleChangeSettings = (key: string, value: string | boolean) => {
@@ -183,62 +160,12 @@ const Index = () => {
 
   return (
     <div css={appStyle}>
-      <Stack spacing={2} direction="row">
-        <Button variant="text">Text</Button>
-        <Button variant="contained" onClick={increment}>
-          increment
-        </Button>
-        <Button variant="outlined" onClick={decrement}>
-          decrement
-        </Button>
-        <Button variant="contained" endIcon={<AlbumIcon />} onClick={reset}>
-          reset
-        </Button>
-      </Stack>
-
       <Box sx={{ textAlign: 'right' }}>
         <SettingModal settings={settings} setSettings={handleChangeSettings} />
       </Box>
 
       {/* If administrator password isn't set, show password setting modal. */}
       <PasswordModal settings={settings} setSettings={handleChangeSettings} />
-
-      <div>count: {count}</div>
-
-      <div>This is Test.</div>
-
-      <div>日本語テストです。</div>
-
-      <div
-        css={{
-          fontWeight: 'bold',
-        }}
-      >
-        太字のテストです。入力
-      </div>
-
-      <div
-        css={{
-          fontWeight: '100',
-        }}
-      >
-        細字のテストです。
-      </div>
-
-      <Button
-        type="button"
-        variant="contained"
-        color="secondary"
-        onClick={() => {
-          window.electron.ipcRenderer.mkdir('/Users/user/Downloads/mkdir', [
-            'aaa.txt',
-            'bbb.dat',
-            'ccc.html',
-          ]);
-        }}
-      >
-        {t('create directory')}
-      </Button>
 
       <MyButton
         type="button"

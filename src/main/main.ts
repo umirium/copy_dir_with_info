@@ -153,18 +153,6 @@ ipcMain.on('electron-store-set', async (_event, key, val) => {
   store.set(key, val);
 });
 
-ipcMain.on('mkdir', async (event, dirname, files) => {
-  const params = ['-p', dirname];
-
-  files.forEach((f: string) => {
-    params.push('&&', 'touch', `${dirname}/${f}`);
-  });
-
-  spawn('mkdir', params, { shell: true }).on('close', (result) => {
-    event.sender.send('mkdir', result === 0);
-  });
-});
-
 ipcMain.on('cpdir', async (event, source, distination) => {
   let test = 0;
 
