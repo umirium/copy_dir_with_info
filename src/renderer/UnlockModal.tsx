@@ -10,8 +10,8 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sha512 } from 'js-sha512';
-import { ModalProps, ModalStyle } from './constants';
 import { useTranslation } from 'react-i18next';
+import { ModalProps, ModalStyle } from './constants';
 
 // type of form
 type FormInput = {
