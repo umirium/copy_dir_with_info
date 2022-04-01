@@ -168,36 +168,7 @@ ipcMain.on('mkdir', async (event, dirname, files) => {
 ipcMain.on('cpdir', async (event, source, distination) => {
   let test = 0;
 
-  await cpy(source, distination, {
-    filter: (file) =>
-      ![
-        'HTM',
-        'htm',
-        'HTML',
-        'html',
-        'XML',
-        'xml',
-        'PDF',
-        'pdf',
-        'TXT',
-        'JPG',
-        'jpg',
-        'GIF',
-        'gif',
-        'EXE',
-        'exe',
-        'JAR',
-        'jar',
-        'DLL',
-        'dll',
-        'BAT',
-        'bat',
-        'DAT',
-        'dat',
-        'ZIP',
-        'zip',
-      ].includes(file.extension),
-  }).on('progress', (progress) => {
+  await cpy(source, distination).on('progress', (progress) => {
     console.log(progress);
 
     // notify the renderer if there is a change in percentage

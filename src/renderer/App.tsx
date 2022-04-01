@@ -37,8 +37,7 @@ const PROGRESS_STATE = {
   NONE: 0,
   INITIALIZE: 1,
   DETERMINATE: 2,
-  INDETERMINATE: 3,
-  COMPLETE: 4,
+  COMPLETE: 3,
 };
 
 // constants of default settings
@@ -76,8 +75,7 @@ const Index = () => {
       console.log(`make directory: ${result}`);
     });
     window.electron.ipcRenderer.on('cpdir', (percent: number) => {
-      console.log(percent);
-      setProgress(percent * 2);
+      setProgress(percent);
     });
   }, []);
 
@@ -92,8 +90,6 @@ const Index = () => {
       setProgressState(PROGRESS_STATE.INITIALIZE);
     } else if (progress > 0 && progress < 100) {
       setProgressState(PROGRESS_STATE.DETERMINATE);
-    } else if (progress < 200) {
-      setProgressState(PROGRESS_STATE.INDETERMINATE);
     } else {
       setProgressState(PROGRESS_STATE.COMPLETE);
     }
@@ -135,8 +131,6 @@ const Index = () => {
     },
   });
 
-  // The remaining processes that exceed 100% will be shown as "Linear indeterminate"
-  // because the number of files after filtering is unknown.
   const progressBar = () => {
     switch (progressState) {
       case PROGRESS_STATE.DETERMINATE:
@@ -150,7 +144,6 @@ const Index = () => {
         );
 
       case PROGRESS_STATE.INITIALIZE:
-      case PROGRESS_STATE.INDETERMINATE:
         return (
           <>
             <Box sx={{ width: '100%' }}>
@@ -175,9 +168,7 @@ const Index = () => {
                 animation: 'pulsate 1.5s infinite ease',
               }}
             >
-              {progressState === PROGRESS_STATE.INITIALIZE
-                ? t('initializing...')
-                : t('processing...')}
+              {t('initializing...')}
             </Box>
           </>
         );
